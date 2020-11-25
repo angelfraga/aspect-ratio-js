@@ -4,6 +4,11 @@ export interface Ratio {
 }
 
 export type RatioType = Ratio | string;
+export type AspectRatioAlignType =
+  | "center"
+  | "center center"
+  | "center top"
+  | "center bottom";
 
 export interface AspectRationOptions {
   /**
@@ -38,6 +43,7 @@ export interface AspectRationOptions {
    *  }
    */
   ratio: RatioType;
+  align: AspectRatioAlignType;
 }
 
 export class AspectRatio {
@@ -113,7 +119,9 @@ export class AspectRatio {
   }
 
   updateStyle() {
-    const { numerator, denominator } = this.options.ratio as Ratio;
+    const { ratio, align } = this.options;
+    const { numerator, denominator } = ratio as Ratio;
+    this.sizer.setAttribute("data-align", align);
     this.style.textContent = `
       html, body {
         margin: 0;

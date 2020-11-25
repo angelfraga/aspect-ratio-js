@@ -7,7 +7,8 @@ const aspectRatio = new AspectRatio({
   mask: document.querySelector("#mask"),
   minHeight: 90,
   minWidth: 160,
-  ratio: "16/9"
+  ratio: "16/9",
+  align: "center center"
 });
 
 function getRandomRatio() {
