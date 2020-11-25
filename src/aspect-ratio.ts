@@ -44,8 +44,6 @@ export class AspectRatio {
   private sizer = window.document.createElement("div") as HTMLDivElement;
   private style = window.document.createElement("style") as HTMLStyleElement;
   private iframe = window.document.createElement("iframe") as HTMLIFrameElement;
-  private _mask: HTMLElement;
-  private onResize = function() {};
   private options: AspectRationOptions;
 
   set minWidth(minWidth: number) {
@@ -54,16 +52,6 @@ export class AspectRatio {
 
   set minHeight(minHeight: number) {
     this.iframe.setAttribute("height", minHeight.toString());
-  }
-
-  private set denominator(denominator: number) {
-    this.updateStyle();
-    this.resizeMask();
-  }
-
-  private set numerator(numerator: number) {
-    this.updateStyle();
-    this.resizeMask();
   }
 
   set ratio(ratio: RatioType) {
@@ -76,9 +64,11 @@ export class AspectRatio {
       this.updateRatioFromString(ratio);
     }
 
-    if (typeof ratio) {
+    if (typeof ratio === "object") {
       this.updateRatioFromRatio(ratio);
     }
+
+    this.updateStyle();
   }
 
   set mask(mask: HTMLElement) {
@@ -90,9 +80,12 @@ export class AspectRatio {
   }
 
   constructor(options: AspectRationOptions) {
-    const { container, mask } = options || {};
+    const { container, mask, ratio } = options || {};
     if (container || mask) {
       this.options = options;
+      this.iframe.classList.add("aspect-ratio-iframe");
+      container.classList.add("aspect-ratio-container");
+      mask.classList.add("aspect-ratio-mask");
       // attach iframe
       container.prepend(this.iframe);
       // add style
@@ -101,8 +94,9 @@ export class AspectRatio {
       this.iframe.contentDocument.body.appendChild(this.sizer);
       // add resize listerner
       this.iframe.contentWindow.addEventListener("resize", () =>
-        this.onResize()
+        this.resizeMask()
       );
+      this.ratio = ratio;
     } else {
       console.error("No container or mask is being passed for aspect-ratio.", {
         options
@@ -111,10 +105,15 @@ export class AspectRatio {
   }
 
   destroy() {
-    this.iframe.contentWindow.removeAllListeners();
+    this.style = undefined;
+    this.sizer = undefined;
+    this.iframe.parentNode.removeChild(this.iframe);
+    this.iframe = undefined;
+    this.options = undefined;
   }
 
   updateStyle() {
+    const { numerator, denominator } = this.options.ratio as Ratio;
     this.style.textContent = `
       html, body {
         margin: 0;
@@ -124,8 +123,8 @@ export class AspectRatio {
       div {
         margin: auto;
         position: absolute;
-        --numerator: ${this.numerator};
-        --denominator: ${this.denominator};
+        --numerator: ${numerator};
+        --denominator: ${denominator};
         max-width: 100%;
         max-height: 100%;
         height: calc(1vw * var(--denominator) / var(--numerator) * 100);
@@ -153,44 +152,44 @@ export class AspectRatio {
         bottom: 0;
       }
     `;
+    this.resizeMask();
   }
 
   resizeMask() {
     const coords = this.sizer.getBoundingClientRect();
-    this._mask.style.width = coords.width + "px";
-    this._mask.style.height = coords.height + "px";
-    this._mask.style.top = coords.top + "px";
-    this._mask.style.bottom = coords.bottom + "px";
-    this._mask.style.left = coords.left + "px";
-    this._mask.style.right = coords.right + "px";
+    const { mask } = this.options;
+    mask.style.width = coords.width + "px";
+    mask.style.height = coords.height + "px";
+    mask.style.top = coords.top + "px";
+    mask.style.bottom = coords.bottom + "px";
+    mask.style.left = coords.left + "px";
+    mask.style.right = coords.right + "px";
   }
 
-  private updateRatioFromString(ratio: string) {
-    const [numeratorStr, denominatorStr] = (ratio || "16/9").split("/");
+  private updateRatioFromString(ratioStr: string) {
+    const [numeratorStr, denominatorStr] = (ratioStr || "16/9").split("/");
     const numerator = parseInt(numeratorStr, 10);
     const denominator = parseInt(denominatorStr, 10);
+    const ratio: Ratio = { denominator, numerator };
+
+    if (!this.isValidRatio(ratio)) return;
+
     this.options = {
       ...this.options,
-      ratio: {
-        numerator,
-        denominator
-      }
+      ratio
     };
   }
 
   private updateRatioFromRatio(ratio: Ratio) {
-    const { numerator, denominator } = ratio;
+    if (!this.isValidRatio(ratio)) return;
 
     this.options = {
       ...this.options,
-      ratio: {
-        numerator,
-        denominator
-      }
+      ratio
     };
   }
 
-  private isValidRatio(numerator: number, denominator: number): boolean {
+  private isValidRatio({ numerator, denominator }: Ratio): boolean {
     const isBiggerThan0 = n => n > 0;
     return isBiggerThan0(numerator) && isBiggerThan0(denominator);
   }
