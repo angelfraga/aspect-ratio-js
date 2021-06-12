@@ -1,6 +1,25 @@
 {
-  "name": "typescript",
-  "version": "0.0.0",
+  "name": "aspect-ratio-js",
+  "version": "0.0.0-development",
   "private": true,
-  "dependencies": {}
+  "dependencies": {},
+  "scripts": {
+    "eslint": "eslint",
+    "lint": "eslint",
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "@typescript-eslint/parser": "^4.26.0",
+    "eslint": "^7.27.0",
+    "eslint-config-google": "^0.14.0",
+    "semantic-release": "^17.4.3",
+    "typescript": "^4.3.2",
+    "webpack": "^5.38.1",
+    "webpack-cli": "^4.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angelfraga/aspect-ratio-js.git"
+  }
 }

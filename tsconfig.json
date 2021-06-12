@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
-    "target": "esnext"
+    "baseUrl": ".",
+    "target": "es5",
+    "module": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "aspect-ratio": [
+        "./packages/aspect-ratio-js"
+      ]
+    }
   }
 }
