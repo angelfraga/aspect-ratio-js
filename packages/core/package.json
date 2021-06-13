@@ -1,0 +1,9 @@
+{
+  "name": "@aspect-ratio/core",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "directory": "packages/core",
+    "url": "https://github.com/angelfraga/aspect-ratio-js"
+  }
+}

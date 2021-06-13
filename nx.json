@@ -1,5 +1,5 @@
 {
-  "npmScope": "aspect-ratio-js",
+  "npmScope": "aspect-ratio",
   "affected": {
     "defaultBase": "master"
   },
